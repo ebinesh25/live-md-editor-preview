@@ -1,0 +1,669 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #282A36;
+  --bg-lighter: #44475A;
+  --current-line: #6272A4;
+  --fg: #F8F8F2;
+  --comment: #6272A4;
+  --selection: #44475A;
+  --red: #FF5555;
+  --orange: #FFB86C;
+  --yellow: #F1FA8C;
+  --green: #50FA7B;
+  --cyan: #8BE9FD;
+  --purple: #BD93F9;
+  --pink: #FF79C6;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--purple);
+  color: var(--bg);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #c984f7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(189, 147, 249, 0.3);
+}
+
+.btn-accent {
+  background-color: var(--green);
+  color: var(--bg);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: #6cfb8f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(80, 250, 123, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--bg-lighter);
+  color: var(--fg);
+  border: 1px solid var(--selection);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--selection);
+  transform: translateY(-1px);
+}
+
+input, textarea {
+  font-family: inherit;
+  background-color: var(--bg-lighter);
+  border: 1px solid var(--selection);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--fg);
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--comment);
+}
+
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--bg) 0%, #1a1a2e 100%);
+}
+
+.home-title {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--fg);
+  letter-spacing: -2px;
+}
+
+.home-title span {
+  color: var(--purple);
+}
+
+.home-subtitle {
+  font-size: 18px;
+  color: var(--comment);
+  margin-bottom: 48px;
+  text-align: center;
+  max-width: 500px;
+}
+
+.home-card {
+  background-color: var(--bg-lighter);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid var(--selection);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.home-section {
+  margin-bottom: 32px;
+}
+
+.home-section:last-child {
+  margin-bottom: 0;
+}
+
+.home-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--fg);
+}
+
+.home-input-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.home-input-group input {
+  flex: 1;
+}
+
+.room-info {
+  background-color: var(--bg);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  border: 1px solid var(--selection);
+}
+
+.room-info-label {
+  font-size: 13px;
+  color: var(--comment);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.room-info-value {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.room-info-value:last-child {
+  margin-bottom: 0;
+}
+
+.copy-btn {
+  background-color: var(--selection);
+  border: 1px solid var(--current-line);
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--fg);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background-color: var(--purple);
+  border-color: var(--purple);
+  color: var(--bg);
+}
+
+.edit-mode-indicator {
+  background-color: var(--green);
+  color: var(--bg);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.read-only-indicator {
+  background-color: var(--orange);
+  color: var(--bg);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.editor-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--bg) 0%, #1a1a2e 100%);
+}
+
+.editor-header {
+  background-color: var(--bg-lighter);
+  border-bottom: 1px solid var(--selection);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.editor-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.editor-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.editor-status {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--comment);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--red);
+  animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+  background-color: var(--green);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.editor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.editor-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--selection);
+  background-color: var(--bg-lighter);
+  position: sticky;
+  top: 65px;
+  z-index: 99;
+  backdrop-filter: blur(8px);
+}
+
+.editor-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--comment);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.markdown-textarea {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: calc(100vh - 180px);
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 15px;
+  line-height: 1.8;
+  resize: none;
+  background-color: transparent;
+  border: none;
+  padding: 48px 32px;
+  color: var(--fg);
+}
+
+.markdown-textarea:focus {
+  outline: none;
+}
+
+.markdown-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.markdown-preview {
+  background-color: transparent;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  min-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.markdown-preview h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--fg);
+  line-height: 1.2;
+  border-bottom: 2px solid var(--selection);
+  padding-bottom: 16px;
+}
+
+.markdown-preview h2 {
+  font-size: 30px;
+  font-weight: 600;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: var(--pink);
+}
+
+.markdown-preview h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  color: var(--orange);
+}
+
+.markdown-preview h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 14px;
+  color: var(--yellow);
+}
+
+.markdown-preview h5 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: var(--cyan);
+}
+
+.markdown-preview h6 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: var(--comment);
+}
+
+.markdown-preview p {
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.markdown-preview ul, .markdown-preview ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.markdown-preview li {
+  margin-bottom: 8px;
+  line-height: 1.8;
+}
+
+.markdown-preview li::marker {
+  color: var(--purple);
+}
+
+.markdown-preview code {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  background-color: var(--bg-lighter);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--pink);
+  border: 1px solid var(--selection);
+}
+
+.markdown-preview pre {
+  background-color: var(--bg-lighter);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border: 1px solid var(--selection);
+  position: relative;
+}
+
+.markdown-preview pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--cyan);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.markdown-preview blockquote {
+  border-left: 4px solid var(--purple);
+  padding: 16px 20px;
+  margin: 20px 0;
+  background-color: var(--bg-lighter);
+  border-radius: 0 8px 8px 0;
+  color: var(--comment);
+  font-style: italic;
+}
+
+.markdown-preview blockquote p {
+  margin-bottom: 8px;
+}
+
+.markdown-preview blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-preview a {
+  color: var(--cyan);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.markdown-preview a:hover {
+  color: var(--fg);
+  border-bottom-color: var(--cyan);
+}
+
+.markdown-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--selection);
+}
+
+.markdown-preview th, .markdown-preview td {
+  border: 1px solid var(--selection);
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background-color: var(--bg-lighter);
+  font-weight: 600;
+  color: var(--purple);
+}
+
+.markdown-preview tr:nth-child(even) {
+  background-color: rgba(68, 71, 90, 0.3);
+}
+
+.markdown-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--selection);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(40, 42, 54, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background-color: var(--bg-lighter);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid var(--selection);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--fg);
+}
+
+.modal-subtitle {
+  font-size: 14px;
+  color: var(--comment);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.modal-input {
+  width: 100%;
+  margin-bottom: 32px;
+  text-align: center;
+  font-family: 'Fira Code', monospace;
+  font-size: 28px;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  padding: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button {
+  flex: 1;
+}
+
+.icon-btn {
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: var(--comment);
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  color: var(--fg);
+  background-color: var(--selection);
+  border-radius: 6px;
+}
+
+.icon-btn.active {
+  color: var(--purple);
+  background-color: rgba(189, 147, 249, 0.1);
+}
+
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 40px;
+  }
+  
+  .home-card {
+    padding: 24px;
+  }
+  
+  .editor-header {
+    padding: 12px 16px;
+  }
+  
+  .markdown-textarea,
+  .markdown-preview {
+    padding: 24px 16px;
+  }
+  
+  .markdown-preview h1 {
+    font-size: 32px;
+  }
+  
+  .markdown-preview h2 {
+    font-size: 24px;
+  }
+  
+  .markdown-preview h3 {
+    font-size: 20px;
+  }
+}
