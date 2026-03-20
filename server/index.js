@@ -146,6 +146,15 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('end-session', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    io.to(roomId).emit('session-ended');
+    rooms.delete(roomId);
+    console.log(`Session ended for room ${roomId}`);
+  });
+
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     if (currentRoomId) {

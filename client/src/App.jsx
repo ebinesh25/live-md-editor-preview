@@ -66,6 +66,10 @@ function RoomPage() {
       navigate('/');
     });
 
+    socket.on('session-ended', () => {
+      navigate('/');
+    });
+
     socket.on('edit-code-verified', (data) => {
       if (data.success) {
         setIsEditing(true);
@@ -83,6 +87,7 @@ function RoomPage() {
       socket.off('content-updated');
       socket.off('user-count');
       socket.off('error');
+      socket.off('session-ended');
       socket.off('edit-code-verified');
       disconnectSocket();
     };
@@ -103,7 +108,7 @@ function RoomPage() {
 
   const handleEndSession = () => {
     localStorage.removeItem(STORAGE_KEY);
-    socket.emit('leave-room');
+    socket.emit('end-session', { roomId });
     disconnectSocket();
     navigate('/');
   };
