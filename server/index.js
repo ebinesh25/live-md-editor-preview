@@ -3,13 +3,18 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
@@ -18,7 +23,6 @@ app.use(cors());
 app.use(express.json());
 
 const rooms = new Map();
-
 const GRACE_PERIOD = 30000;
 
 function generateEditCode() {
@@ -164,8 +168,14 @@ io.on('connection', (socket) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+app.use(express.static(path.join(__dirname, 'public')));
 
-httpServer.listen(PORT, () => {
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 8080;
+
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
