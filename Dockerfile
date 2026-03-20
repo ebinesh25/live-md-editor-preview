@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY client/package*.json ./client/
 WORKDIR /app/client
-RUN npm ci
+RUN npm install
 COPY client/ .
 RUN npm run build
 
@@ -12,7 +12,7 @@ FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/client/dist ./public
 COPY server/package*.json ./
-RUN npm ci --production
+RUN npm install --production
 COPY server/ .
 ENV PORT=8080
 EXPOSE 8080
