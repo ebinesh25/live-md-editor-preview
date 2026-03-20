@@ -75,16 +75,6 @@ function Editor({
     setTimeout(() => setCopiedRoomId(false), 2000);
   };
 
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.addEventListener('paste', handlePaste);
-      return () => {
-        textarea.removeEventListener('paste', handlePaste);
-      };
-    }
-  }, [handlePaste]);
-
   return (
     <div className="editor-page">
       <header className="editor-header">
@@ -155,6 +145,7 @@ function Editor({
               className="markdown-textarea"
               value={localContent}
               onChange={handleChange}
+              onPaste={handlePaste}
               disabled={!isEditing}
               placeholder={isEditing ? "Start typing your markdown here..." : "Enter edit code to enable editing"}
             />

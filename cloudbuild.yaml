@@ -1,3 +1,6 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: 'docker'
     args: ['build', '-t', 'gcr.io/tts-fastpi/collab-editor:$COMMIT_SHA', '.']
