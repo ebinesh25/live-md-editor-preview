@@ -45,6 +45,7 @@ button {
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -114,13 +115,13 @@ input::placeholder, textarea::placeholder {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(135deg, var(--bg) 0%, #1a1a2e 100%);
+  background: var(--bg);
 }
 
 .home-title {
-  font-size: 56px;
+  font-size: 64px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 48px;
   color: var(--fg);
   letter-spacing: -2px;
 }
@@ -129,78 +130,78 @@ input::placeholder, textarea::placeholder {
   color: var(--purple);
 }
 
-.home-subtitle {
-  font-size: 18px;
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.home-btn {
+  min-width: 200px;
+  padding: 14px 32px;
+  font-size: 16px;
+}
+
+.home-divider {
   color: var(--comment);
-  margin-bottom: 48px;
-  text-align: center;
-  max-width: 500px;
+  font-size: 14px;
+}
+
+.home-join-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.home-join-input {
+  width: 280px;
 }
 
 .home-card {
-  background-color: var(--bg-lighter);
-  border-radius: 16px;
-  padding: 40px;
   width: 100%;
-  max-width: 520px;
-  border: 1px solid var(--selection);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.home-section {
-  margin-bottom: 32px;
-}
-
-.home-section:last-child {
-  margin-bottom: 0;
-}
-
-.home-section-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--fg);
-}
-
-.home-input-group {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.home-input-group input {
-  flex: 1;
+  max-width: 400px;
 }
 
 .room-info {
-  background-color: var(--bg);
+  background-color: var(--bg-lighter);
   border-radius: 12px;
   padding: 24px;
-  margin-top: 24px;
   border: 1px solid var(--selection);
 }
 
+.room-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
 .room-info-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--comment);
-  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 
 .room-info-value {
-  font-family: 'Fira Code', 'Consolas', monospace;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--green);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  color: var(--fg);
+}
+
+.room-info-row {
   margin-bottom: 16px;
 }
 
-.room-info-value:last-child {
-  margin-bottom: 0;
+.edit-code {
+  font-family: 'Fira Code', monospace;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 4px;
+  margin-top: 4px;
 }
 
 .copy-btn {
@@ -219,48 +220,26 @@ input::placeholder, textarea::placeholder {
   color: var(--bg);
 }
 
-.edit-mode-indicator {
-  background-color: var(--green);
-  color: var(--bg);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.read-only-indicator {
-  background-color: var(--orange);
-  color: var(--bg);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.copy-btn.full-width {
+  width: 100%;
+  padding: 10px;
 }
 
 .editor-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, var(--bg) 0%, #1a1a2e 100%);
+  background: var(--bg);
 }
 
 .editor-header {
   background-color: var(--bg-lighter);
   border-bottom: 1px solid var(--selection);
-  padding: 16px 32px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(8px);
 }
 
 .editor-header-left {
@@ -275,10 +254,14 @@ input::placeholder, textarea::placeholder {
   color: var(--fg);
 }
 
+.editor-title span {
+  color: var(--purple);
+}
+
 .editor-status {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .status-badge {
@@ -287,6 +270,9 @@ input::placeholder, textarea::placeholder {
   gap: 8px;
   font-size: 14px;
   color: var(--comment);
+  background-color: var(--bg);
+  padding: 8px 14px;
+  border-radius: 6px;
 }
 
 .status-dot {
@@ -311,52 +297,68 @@ input::placeholder, textarea::placeholder {
   }
 }
 
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.toolbar-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  color: var(--comment);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.toolbar-btn:hover {
+  background-color: var(--selection);
+  color: var(--fg);
+}
+
+.toolbar-btn.active {
+  background-color: rgba(189, 147, 249, 0.15);
+  color: var(--purple);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--selection);
+  margin: 0 8px;
+}
+
 .editor-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0;
 }
 
-.editor-section {
+.editor-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.editor-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--selection);
-  background-color: var(--bg-lighter);
-  position: sticky;
-  top: 65px;
-  z-index: 99;
-  backdrop-filter: blur(8px);
-}
-
-.editor-section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--comment);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  padding: 24px;
 }
 
 .markdown-textarea {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  min-height: calc(100vh - 180px);
+  min-height: calc(100vh - 200px);
   font-family: 'Fira Code', 'Consolas', monospace;
   font-size: 15px;
   line-height: 1.8;
   resize: none;
   background-color: transparent;
   border: none;
-  padding: 48px 32px;
+  padding: 32px;
   color: var(--fg);
 }
 
@@ -373,8 +375,8 @@ input::placeholder, textarea::placeholder {
   background-color: transparent;
   max-width: 900px;
   margin: 0 auto;
-  padding: 48px 32px;
-  min-height: calc(100vh - 180px);
+  padding: 32px;
+  min-height: calc(100vh - 200px);
   overflow-y: auto;
 }
 
@@ -565,9 +567,9 @@ input::placeholder, textarea::placeholder {
 .modal {
   background-color: var(--bg-lighter);
   border-radius: 16px;
-  padding: 40px;
+  padding: 32px;
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   border: 1px solid var(--selection);
   box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.3s ease;
@@ -585,7 +587,7 @@ input::placeholder, textarea::placeholder {
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 8px;
   color: var(--fg);
@@ -594,13 +596,13 @@ input::placeholder, textarea::placeholder {
 .modal-subtitle {
   font-size: 14px;
   color: var(--comment);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   line-height: 1.6;
 }
 
 .modal-input {
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   text-align: center;
   font-family: 'Fira Code', monospace;
   font-size: 28px;
@@ -639,20 +641,31 @@ input::placeholder, textarea::placeholder {
 
 @media (max-width: 768px) {
   .home-title {
-    font-size: 40px;
+    font-size: 48px;
   }
   
-  .home-card {
-    padding: 24px;
+  .home-join-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .home-join-input {
+    width: 100%;
   }
   
   .editor-header {
-    padding: 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .editor-status {
+    justify-content: center;
+    flex-wrap: wrap;
   }
   
   .markdown-textarea,
   .markdown-preview {
-    padding: 24px 16px;
+    padding: 16px;
   }
   
   .markdown-preview h1 {

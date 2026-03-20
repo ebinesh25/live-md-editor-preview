@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Preview from './Preview';
 import JoinModal from './JoinModal';
-import { Edit3, Eye, Users, Lock, Wifi, WifiOff, LogOut } from 'lucide-react';
+import { Users, Copy, Edit3, Eye, Wifi, WifiOff, LogOut } from 'lucide-react';
 
 const STORAGE_KEY = 'collab-editor-room';
 
@@ -23,6 +23,8 @@ function Editor({
   const [debounceTimer, setDebounceTimer] = useState(null);
   const [viewMode, setViewMode] = useState(defaultViewMode || 'preview');
   const [isRoomOwner, setIsRoomOwner] = useState(false);
+  const [copiedRoomId, setCopiedRoomId] = useState(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     const savedRoom = localStorage.getItem(STORAGE_KEY);
@@ -53,114 +55,108 @@ function Editor({
     setDebounceTimer(timer);
   }, [onContentChange, debounceTimer]);
 
+  const handlePaste = useCallback((e) => {
+    const clipboardData = e.clipboardData;
+    
+    const hasImage = Array.from(clipboardData.items).some(
+      item => item.type.startsWith('image/')
+    );
+
+    if (hasImage) {
+      e.preventDefault();
+      alert('Image paste is not supported. Please use image URLs instead.');
+      return;
+    }
+  }, []);
+
+  const handleCopyRoomId = () => {
+    navigator.clipboard.writeText(roomId);
+    setCopiedRoomId(true);
+    setTimeout(() => setCopiedRoomId(false), 2000);
+  };
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.addEventListener('paste', handlePaste);
+      return () => {
+        textarea.removeEventListener('paste', handlePaste);
+      };
+    }
+  }, [handlePaste]);
+
   return (
     <div className="editor-page">
       <header className="editor-header">
         <div className="editor-header-left">
-          <h1 className="editor-title">Collab Editor</h1>
-          {isEditing ? (
-            <span className="edit-mode-indicator">
-              <Edit3 size={12} style={{ marginRight: '4px' }} />
-              Edit Mode
-            </span>
-          ) : (
-            <span className="read-only-indicator">
-              <Eye size={12} style={{ marginRight: '4px' }} />
-              Read Only
-            </span>
-          )}
-        </div>
-        
-        <div className="editor-status">
-          {!isEditing && (
-            <button className="btn-accent" onClick={onEnableEditing}>
-              <Lock size={16} />
-              Enable Editing
-            </button>
-          )}
-          <div className="status-badge">
-            <span className={`status-dot ${isConnected ? 'connected' : ''}`}></span>
-            {isConnected ? <Wifi size={16} /> : <WifiOff size={16} />}
-            {isConnected ? 'Connected' : 'Disconnected'}
-          </div>
+          <h1 className="editor-title">
+            <span>Collab</span>
+          </h1>
           <div className="status-badge">
             <Users size={16} />
             {connectedUsers} {connectedUsers === 1 ? 'user' : 'users'}
           </div>
+        </div>
+        
+        <div className="editor-status">
+          <div className="editor-toolbar">
+            <button
+              onClick={() => setViewMode('edit')}
+              className={viewMode === 'edit' ? 'toolbar-btn active' : 'toolbar-btn'}
+            >
+              <Edit3 size={16} />
+              Edit
+            </button>
+            <button
+              onClick={() => setViewMode('preview')}
+              className={viewMode === 'preview' ? 'toolbar-btn active' : 'toolbar-btn'}
+            >
+              <Eye size={16} />
+              Preview
+            </button>
+            
+            <div className="toolbar-divider" />
+            
+            <button className="copy-btn" onClick={handleCopyRoomId}>
+              <Copy size={14} />
+              {copiedRoomId ? 'Copied!' : 'Copy Room ID'}
+            </button>
+          </div>
+
+          {!isEditing && (
+            <button className="btn-accent" onClick={onEnableEditing}>
+              <Edit3 size={16} />
+              Enable Editing
+            </button>
+          )}
+
+          <div className="status-badge">
+            <span className={`status-dot ${isConnected ? 'connected' : ''}`}></span>
+            {isConnected ? <Wifi size={16} /> : <WifiOff size={16} />}
+          </div>
+
           {isRoomOwner && (
             <button 
               onClick={() => onEndSession && onEndSession()}
               className="copy-btn"
-              style={{ 
-                padding: '6px 12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '14px',
-                backgroundColor: 'rgba(255, 85, 85, 0.1)',
-                border: '1px solid rgba(255, 85, 85, 0.3)',
-                color: '#ff5555'
-              }}
               title="End Session"
             >
               <LogOut size={16} />
-              End Session
             </button>
           )}
         </div>
       </header>
 
       <main className="editor-content">
-        <div className="editor-section" style={{ flex: 1 }}>
-          <div className="editor-section-header">
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                onClick={() => setViewMode('edit')}
-                className={viewMode === 'edit' ? 'icon-btn active' : 'icon-btn'}
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: '6px',
-                  backgroundColor: viewMode === 'edit' ? 'rgba(189, 147, 249, 0.15)' : 'transparent',
-                  color: viewMode === 'edit' ? '#bd93f9' : '#6272a4',
-                  border: '1px solid',
-                  borderColor: viewMode === 'edit' ? '#bd93f9' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                <Edit3 size={16} />
-                Edit
-              </button>
-              <button
-                onClick={() => setViewMode('preview')}
-                className={viewMode === 'preview' ? 'icon-btn active' : 'icon-btn'}
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: '6px',
-                  backgroundColor: viewMode === 'preview' ? 'rgba(189, 147, 249, 0.15)' : 'transparent',
-                  color: viewMode === 'preview' ? '#bd93f9' : '#6272a4',
-                  border: '1px solid',
-                  borderColor: viewMode === 'preview' ? '#bd93f9' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                <Eye size={16} />
-                Preview
-              </button>
-            </div>
-          </div>
-
+        <div className="editor-main">
           {viewMode === 'edit' ? (
             <textarea
+              ref={textareaRef}
               className="markdown-textarea"
               value={localContent}
               onChange={handleChange}
               disabled={!isEditing}
               placeholder={isEditing ? "Start typing your markdown here..." : "Enter edit code to enable editing"}
-              style={{ minHeight: 'calc(100vh - 200px)' }}
             />
           ) : (
             <Preview content={localContent} />
