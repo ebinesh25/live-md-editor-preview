@@ -23,20 +23,17 @@ function RoomPage() {
   const [connectedUsers, setConnectedUsers] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [defaultViewMode, setDefaultViewMode] = useState('preview');
+  
+  const savedRoom = localStorage.getItem(STORAGE_KEY);
+  const currentRoom = savedRoom ? JSON.parse(savedRoom) : null;
+  const isRoomOwner = currentRoom?.roomId === roomId;
+  const [defaultViewMode, setDefaultViewMode] = useState(isRoomOwner ? 'edit' : 'preview');
 
   useEffect(() => {
     connectSocket();
 
-    const savedRoom = localStorage.getItem(STORAGE_KEY);
-    const currentRoom = savedRoom ? JSON.parse(savedRoom) : null;
-    const isRoomOwner = currentRoom?.roomId === roomId;
-
     if (isRoomOwner) {
       setIsEditing(true);
-      setDefaultViewMode('edit');
-    } else {
-      setDefaultViewMode('preview');
     }
 
     socket.on('connect', () => {
