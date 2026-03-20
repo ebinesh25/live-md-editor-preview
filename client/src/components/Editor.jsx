@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Preview from './Preview';
 import JoinModal from './JoinModal';
-import { Users, Copy, Edit3, Eye, LogOut, Check, ChevronDown } from 'lucide-react';
+import { Users, Copy, Edit3, Eye, LogOut, Check, ChevronDown, Pencil, RefreshCw } from 'lucide-react';
 
 const STORAGE_KEY = 'collab-editor-room';
+const USERNAME_KEY = 'collab-username';
 
 const ADJECTIVES = ['Swift', 'Silent', 'Nimble', 'Shadow', 'Bright', 'Quick', 'Calm', 'Bold'];
 const ANIMALS = ['Fox', 'Owl', 'Deer', 'Lynx', 'Wolf', 'Bear', 'Hawk', 'Fox'];
@@ -36,12 +37,20 @@ function Editor({
   const [copiedRoomId, setCopiedRoomId] = useState(false);
   const [copiedEditCode, setCopiedEditCode] = useState(false);
   const [showMobileInfo, setShowMobileInfo] = useState(false);
+  const [showUsernameEdit, setShowUsernameEdit] = useState(false);
+  const [tempUsername, setTempUsername] = useState('');
   const textareaRef = useRef(null);
-  const [username] = useState(() => localStorage.getItem('collab-username') || (() => {
+  const usernameInputRef = useRef(null);
+  
+  const getInitialUsername = () => {
+    const saved = localStorage.getItem(USERNAME_KEY);
+    if (saved) return saved;
     const name = generateUsername();
-    localStorage.setItem('collab-username', name);
+    localStorage.setItem(USERNAME_KEY, name);
     return name;
-  })());
+  };
+  
+  const [username, setUsername] = useState(getInitialUsername);
 
   const wordCount = useMemo(() => {
     if (!localContent.trim()) return 0;
@@ -121,6 +130,36 @@ function Editor({
     }
   };
 
+  const handleEditUsername = () => {
+    setTempUsername(username);
+    setShowUsernameEdit(true);
+    setTimeout(() => usernameInputRef.current?.focus(), 100);
+  };
+
+  const handleSaveUsername = () => {
+    const trimmed = tempUsername.trim();
+    if (trimmed && trimmed.length <= 20) {
+      setUsername(trimmed);
+      localStorage.setItem(USERNAME_KEY, trimmed);
+    }
+    setShowUsernameEdit(false);
+  };
+
+  const handleRandomizeUsername = () => {
+    const newName = generateUsername();
+    setUsername(newName);
+    setTempUsername(newName);
+    localStorage.setItem(USERNAME_KEY, newName);
+  };
+
+  const handleUsernameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveUsername();
+    } else if (e.key === 'Escape') {
+      setShowUsernameEdit(false);
+    }
+  };
+
   const lineNumbers = Array.from({ length: Math.max(lineCount, 20) }, (_, i) => i + 1);
 
   return (
@@ -151,6 +190,42 @@ function Editor({
               Preview
             </button>
           </nav>
+          {/* Username Display - Desktop */}
+          <div className="hidden md:flex items-center gap-2 ml-4 pl-4 border-l border-outline-variant/30">
+            {showUsernameEdit ? (
+              <div className="flex items-center gap-2">
+                <input
+                  ref={usernameInputRef}
+                  type="text"
+                  value={tempUsername}
+                  onChange={(e) => setTempUsername(e.target.value)}
+                  onKeyDown={handleUsernameKeyDown}
+                  onBlur={handleSaveUsername}
+                  maxLength={20}
+                  className="w-32 px-2 py-1 bg-surface-container-low rounded text-sm outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Your name"
+                />
+              </div>
+            ) : (
+              <>
+                <span className="text-sm text-on-surface-variant">{username}</span>
+                <button 
+                  onClick={handleRandomizeUsername}
+                  className="p-1 text-on-surface-variant hover:text-white transition-colors"
+                  title="Randomize name"
+                >
+                  <RefreshCw size={14} />
+                </button>
+                <button 
+                  onClick={handleEditUsername}
+                  className="p-1 text-on-surface-variant hover:text-white transition-colors"
+                  title="Edit name"
+                >
+                  <Pencil size={14} />
+                </button>
+              </>
+            )}
+          </div>
         </div>
         
         {/* Mobile Editor/Preview Toggle */}
@@ -178,21 +253,43 @@ function Editor({
         </div>
         
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Connection Status - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/10">
-            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary animate-pulse' : 'bg-error'}`}></span>
-            <span className="text-xs font-medium text-on-surface-variant">
-              {connectedUsers} active
-            </span>
+          {/* Stats Bar */}
+          <div className="hidden md:flex items-center gap-1 bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/10">
+            <div className="flex items-center gap-1 px-2 border-r border-outline-variant/30">
+              <span className="text-[10px] text-on-surface-variant/60 uppercase">W</span>
+              <span className="text-xs font-mono font-medium">{wordCount}</span>
+            </div>
+            <div className="flex items-center gap-1 px-2 border-r border-outline-variant/30">
+              <span className="text-[10px] text-on-surface-variant/60 uppercase">C</span>
+              <span className="text-xs font-mono font-medium">{charCount}</span>
+            </div>
+            <div className="flex items-center gap-1 px-2 border-r border-outline-variant/30">
+              <span className="text-[10px] text-on-surface-variant/60 uppercase">L</span>
+              <span className="text-xs font-mono font-medium">{lineCount}</span>
+            </div>
+            <div className="flex items-center gap-1 px-2">
+              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary animate-pulse' : 'bg-error'}`}></span>
+              <span className="text-xs font-mono font-medium">{connectedUsers}</span>
+            </div>
+          </div>
+          
+          {/* Mobile Stats */}
+          <div className="flex md:hidden items-center gap-1 text-[10px] font-mono text-on-surface-variant">
+            <span>{wordCount}W</span>
+            <span className="text-outline/50">|</span>
+            <span>{charCount}C</span>
+            <span className="text-outline/50">|</span>
+            <span>{lineCount}L</span>
+            <span className="text-outline/50">|</span>
+            <span>{connectedUsers} users</span>
           </div>
           
           {/* Mobile Info Toggle */}
           <button 
             onClick={() => setShowMobileInfo(!showMobileInfo)}
-            className="md:hidden flex items-center gap-1 px-3 py-1.5 rounded-md bg-surface-container text-[#a1a1a1] text-xs"
+            className="md:hidden p-2 rounded-md bg-surface-container text-[#a1a1a1]"
           >
-            <span className="text-[10px]">{wordCount}W {charCount}C</span>
-            <ChevronDown size={12} className={`transition-transform ${showMobileInfo ? 'rotate-180' : ''}`} />
+            <ChevronDown size={16} className={`transition-transform ${showMobileInfo ? 'rotate-180' : ''}`} />
           </button>
           
           {/* Action Buttons */}
@@ -248,9 +345,51 @@ function Editor({
 
       {/* Mobile Info Panel */}
       <div className={`fixed top-14 left-0 right-0 z-40 bg-[#1b1b1c] border-b border-outline-variant/10 transition-all duration-300 md:hidden ${
-        showMobileInfo ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+        showMobileInfo ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
       }`}>
         <div className="p-4 space-y-4">
+          {/* Username Section */}
+          <div className="space-y-1">
+            <label className="text-[10px] text-on-surface-variant/60 uppercase">Your Name</label>
+            {showUsernameEdit ? (
+              <div className="flex items-center gap-2 p-2 bg-surface-container-low rounded-md">
+                <input
+                  ref={usernameInputRef}
+                  type="text"
+                  value={tempUsername}
+                  onChange={(e) => setTempUsername(e.target.value)}
+                  onKeyDown={handleUsernameKeyDown}
+                  maxLength={20}
+                  className="flex-grow bg-transparent text-sm outline-none"
+                  placeholder="Enter name"
+                />
+                <button 
+                  onClick={handleSaveUsername}
+                  className="text-secondary p-1"
+                >
+                  <Check size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-2 bg-surface-container-low rounded-md">
+                <span className="flex-grow text-sm truncate">{username}</span>
+                <button 
+                  onClick={handleRandomizeUsername}
+                  className="text-on-surface-variant hover:text-white p-1"
+                  title="Randomize"
+                >
+                  <RefreshCw size={14} />
+                </button>
+                <button 
+                  onClick={handleEditUsername}
+                  className="text-primary hover:text-white p-1"
+                >
+                  <Pencil size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+          
           {isRoomOwner && editCode && (
             <div className="space-y-1">
               <label className="text-[10px] text-secondary uppercase">Edit Code</label>
@@ -289,11 +428,11 @@ function Editor({
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 mt-14 p-4 md:p-6 flex flex-col">
+      <main className="flex-1 mt-14 p-4 md:p-6 flex flex-col lg:flex-row gap-4 md:gap-6">
         {/* Editor/Preview Section */}
         <div className="flex-grow flex flex-col gap-4 md:gap-6">
           {/* Ephemeral Alert - Hidden on mobile */}
-          <div className="hidden md:flex items-center gap-3 p-4 bg-tertiary-container/10 border border-tertiary-container/20 rounded-xl">
+          <div className="hidden lg:flex items-center gap-3 p-4 bg-tertiary-container/10 border border-tertiary-container/20 rounded-xl">
             <span className="material-symbols-outlined text-tertiary">info</span>
             <p className="text-sm text-tertiary-fixed-dim font-medium">
               Ephemeral Session: All data is permanently deleted once the last person leaves.
@@ -351,6 +490,79 @@ function Editor({
             </div>
           </div>
         </div>
+
+        {/* Right Sidebar - Desktop */}
+        <aside className="hidden lg:flex flex-col gap-4 w-72 shrink-0">
+          {/* Session Info Card */}
+          <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+            <h3 className="text-xs font-bold text-outline uppercase tracking-wider mb-4">Session Info</h3>
+            
+            {/* Edit Code - Owner Only */}
+            {isRoomOwner && editCode && (
+              <div className="space-y-2 mb-4">
+                <label className="text-[10px] text-secondary uppercase">Edit Code</label>
+                <div className="flex items-center gap-2 p-3 bg-surface-container-low rounded-lg">
+                  <span className="text-xl font-mono font-bold flex-grow tracking-wider" style={{color: '#b7d16f'}}>{editCode}</span>
+                  <button 
+                    onClick={handleCopyEditCode}
+                    className="text-primary hover:text-white transition-colors p-1"
+                  >
+                    {copiedEditCode ? <Check size={16} /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Room ID */}
+            <div className="space-y-2 mb-4">
+              <label className="text-[10px] text-on-surface-variant/60 uppercase">Room ID</label>
+              <div className="flex items-center gap-2 p-3 bg-surface-container-lowest rounded-lg">
+                <span className="text-xs font-mono flex-grow truncate">{roomDisplayId}</span>
+                <button 
+                  onClick={handleCopyRoomId}
+                  className="text-primary hover:text-white transition-colors p-1"
+                >
+                  {copiedRoomId ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
+            </div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="p-3 bg-surface-container-low rounded-lg text-center">
+                <div className="text-[10px] text-on-surface-variant/60 uppercase mb-1">Words</div>
+                <div className="text-lg font-bold font-mono">{wordCount}</div>
+              </div>
+              <div className="p-3 bg-surface-container-low rounded-lg text-center">
+                <div className="text-[10px] text-on-surface-variant/60 uppercase mb-1">Chars</div>
+                <div className="text-lg font-bold font-mono">{charCount}</div>
+              </div>
+              <div className="p-3 bg-surface-container-low rounded-lg text-center">
+                <div className="text-[10px] text-on-surface-variant/60 uppercase mb-1">Lines</div>
+                <div className="text-lg font-bold font-mono">{lineCount}</div>
+              </div>
+            </div>
+            
+            {/* Connected Users */}
+            <div className="flex items-center gap-2 p-3 bg-surface-container-low rounded-lg">
+              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary animate-pulse' : 'bg-error'}`}></span>
+              <span className="text-sm font-medium">{connectedUsers} {connectedUsers === 1 ? 'user' : 'users'} connected</span>
+            </div>
+          </div>
+
+          {/* Security Card */}
+          <div className="p-4 rounded-xl border border-outline-variant/10 backdrop-blur-md" style={{background: 'rgba(53, 53, 53, 0.6)'}}>
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-secondary" style={{fontVariationSettings: "'FILL' 1"}}>security</span>
+              <div>
+                <h4 className="text-sm font-bold text-on-surface">Secure & Private</h4>
+                <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  This session is ephemeral. No data hits a persistent database.
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </main>
 
       {/* Edit Code Modal */}
